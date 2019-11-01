@@ -1,0 +1,8 @@
+#define application scope and other important things
+
+
+
+
+app:
+  jwt:
+    secret: secret

@@ -1,0 +1,78 @@
+swagger: '2.0'
+info:
+  version: 0.1.0
+  title:  EthAuthServer
+  description: ''
+host: 'localhost:8080'
+basePath: /eth-auth
+schemes:
+  - http
+tags:
+  - name: Authentication
+    description: 'Authentication endpoint'
+paths:
+    '/v1/auth':
+      get:
+        operationId: authenticate
+        tags:
+        - Authentication
+        produces:
+        - application/json
+        responses:
+          '200':
+            description: ''
+            schema:
+              $ref: '#/definitions/response-article-list'
+          '401':
+            $ref: '#/responses/response-unauthorized'
+          '500':
+            $ref: '#/responses/response-internal-server-error-500'
+parameters:
+    parameter-user-id:
+      name: user-id
+      in: path
+      type: integer
+      format: int32
+      required: true
+definitions:
+    response-base:
+      type: object
+      properties:
+        success:
+          type: boolean
+        resultCode:
+          type: integer
+          format: int32
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: string
+        transactionId:
+          type: string
+        type:
+          type: string
+      discriminator: type
+      required:
+        - success
+        - resultCode
+    model-login:
+      type: object
+      properties:
+        user-name:
+          type: string
+        password:
+          type: string
+responses:
+    response-internal-server-error-500:
+      description: Internal Server error
+      schema:
+        $ref: '#/definitions/response-base'
+    response-unauthorized:
+        description: Authentication information is missing or invalid
+        schema:
+          $ref: '#/definitions/response-base' 
+        headers:
+          WWW_Authenticate:
+            type: string
