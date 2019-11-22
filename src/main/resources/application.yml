@@ -1,8 +1,32 @@
-#define application scope and other important things
+#==== spring related ======#
+spring:
+   profiles:
+      active: dev
+   application:
+    name: eth-auth-server
 
+#==== connect to mysql ======#
+#   jpa:
+#      hibernate:
+#         ddl-auto: update
+#      properties.hibernate.dialect: org.hibernate.dialect.PostgreSQL10Dialect
+#   datasource:
+#      url: jdbc:mysql://localhost:3306/ethjournal
+#      username: root
+#      password: root
+#      driver-class-name: com.mysql.jdbc.Driver
 
+# ====== hibernate ====
+#logging.level.org.hibernate.SQL=TRACE
+#logging.level.org.hibernate.type=debug
+
+#logging:
+#   level:
+#      org.hibernate.SQL: TRACE
+#      org.hibernate.type: debug
+#      org.springframework.security: DEBUG
 
 
 app:
   jwt:
-    secret: secret
+    key: secret

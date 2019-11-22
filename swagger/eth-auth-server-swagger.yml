@@ -1,39 +1,37 @@
 swagger: '2.0'
 info:
   version: 0.1.0
-  title:  EthAuthServer
+  title:  Ethjournal Authentication server
   description: ''
 host: 'localhost:8080'
-basePath: /eth-auth
-schemes:
-  - http
+basePath: /
 tags:
   - name: Authentication
-    description: 'Authentication endpoint'
+    description: 'Authenticate users'
 paths:
     '/v1/auth':
-      get:
-        operationId: authenticate
+      post:
+        operationId: authenticateUser
         tags:
         - Authentication
         produces:
         - application/json
+        consumes:
+        - application/json
+        parameters:
+        - name: login
+          in: body
+          schema:
+            $ref: '#/definitions/model-login'
         responses:
           '200':
             description: ''
             schema:
-              $ref: '#/definitions/response-article-list'
+              $ref: '#/definitions/response-model-token'
           '401':
             $ref: '#/responses/response-unauthorized'
           '500':
             $ref: '#/responses/response-internal-server-error-500'
-parameters:
-    parameter-user-id:
-      name: user-id
-      in: path
-      type: integer
-      format: int32
-      required: true
 definitions:
     response-base:
       type: object
@@ -60,10 +58,20 @@ definitions:
     model-login:
       type: object
       properties:
-        user-name:
+        userName:
           type: string
         password:
           type: string
+      required:
+         - userName
+         - password
+    response-model-token:
+      allOf:
+      - $ref: '#/definitions/response-base'
+      - type: object
+        properties:
+          tokenString:
+            type: string
 responses:
     response-internal-server-error-500:
       description: Internal Server error
