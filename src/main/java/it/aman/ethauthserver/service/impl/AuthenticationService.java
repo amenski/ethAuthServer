@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import it.aman.ethauth.annotations.EthLoggable;
 import it.aman.ethauth.service.EthUserDetailServiceImpl;
 import it.aman.ethauthserver.service.IAuthenticationService;
 import it.aman.ethauthserver.util.JwtTokenUtil;
@@ -28,16 +29,22 @@ public class AuthenticationService implements IAuthenticationService {
 	private DaoAuthenticationProvider authProvider;
 	
 	@Override
+	@EthLoggable
 	public String authenticateAndGenerateToken(String userName, String password) throws Exception {
-		if(StringUtils.isAnyEmpty(userName, password))
-			throw new AuthenticationException("Insufficient permission.");
-		
-		Authentication auth = authProvider.authenticate(new UsernamePasswordAuthenticationToken(userName, password));
-		if(auth == null)
-			throw new AuthenticationException("Insufficient permission.");
-		
-		UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
-			
+		UserDetails userDetails = null;
+
+		try {
+			if (StringUtils.isAnyEmpty(userName, password))
+				throw new AuthenticationException("Insufficient permission.");
+
+			Authentication auth = authProvider.authenticate(new UsernamePasswordAuthenticationToken(userName, password));
+			if (auth == null)
+				throw new AuthenticationException("Insufficient permission.");
+
+			userDetails = userDetailsService.loadUserByUsername(userName);
+		} catch (Exception e) {
+			throw e;
+		}
 		return jwtUtil.generateToken(userDetails);
 	}
 

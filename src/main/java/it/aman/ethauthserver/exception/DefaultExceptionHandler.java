@@ -20,12 +20,11 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import it.aman.ethauth.config.EthAuthConstants;
+import it.aman.ethauth.util.LogConstants;
 import it.aman.ethauthserver.swagger.model.ResponseBase;
-import it.aman.ethauthserver.util.EthAuthserverConstants.LogConstants;
 
-@Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class DefaultExceptionHandler extends ResponseEntityExceptionHandler{
 
 	protected Logger log = LoggerFactory.getLogger(getClass());
@@ -36,7 +35,7 @@ public class DefaultExceptionHandler extends ResponseEntityExceptionHandler{
 			HttpHeaders headers, HttpStatus status, 
 			WebRequest request) {
 		String methodName = "handleMissingServletRequestParameter()";
-		log.error(LogConstants.PARAMETER_2.getMessageText(), methodName, ex.getMessage());
+		log.error(LogConstants.PARAMETER_2, methodName, ex.getMessage());
 		String error = "Parameter " + ex.getParameterName() + " is missing";
 		return buildResponseEntity(HttpStatus.BAD_REQUEST, headers, null, ex.getMessage(), Arrays.asList(error));
 	}
@@ -44,14 +43,14 @@ public class DefaultExceptionHandler extends ResponseEntityExceptionHandler{
 	@ExceptionHandler(value = AccessDeniedException.class)
 	public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex) {
 		String methodName = "handleAccessDeniedException()";
-		log.error(LogConstants.PARAMETER_2.getMessageText(), methodName, ex.getMessage());
-		return buildResponseEntity(HttpStatus.UNAUTHORIZED, null, null, ex.getMessage(), Arrays.asList(EthAuthConstants.INSUFFICENT_PERMISSION));
+		log.error(LogConstants.PARAMETER_2, methodName, ex.getMessage());
+		return buildResponseEntity(HttpStatus.UNAUTHORIZED, null, null, ex.getMessage(), Arrays.asList(LogConstants.INSUFFICENT_PERMISSION));
 	}
 	
 	@ExceptionHandler(value = MaxUploadSizeExceededException.class)
 	public ResponseEntity<Object> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException ex) {
 		String methodName = "handleMaxUploadSizeExceededException()";
-		log.error(LogConstants.PARAMETER_2.getMessageText(), methodName, ex.getMessage());
+		log.error(LogConstants.PARAMETER_2, methodName, ex.getMessage());
 		return buildResponseEntity(HttpStatus.BAD_REQUEST, null, null, ex.getMessage(), null);
 	}
 	

@@ -1,5 +1,8 @@
 package it.aman.ethauthserver.controller;
 
+import org.slf4j.MDC;
+
+import it.aman.ethauth.util.LogConstants;
 import it.aman.ethauthserver.swagger.model.ResponseBase;
 
 public abstract class AbstractResponseHandler {
@@ -11,23 +14,22 @@ public abstract class AbstractResponseHandler {
 		}
 		response.success(true);
 		response.resultCode(200);
-		response.message("");
-		response.errors(null);
+		response.setTransactionId(MDC.get(LogConstants.UUID_KEY));
 
 		return response;
 	}
 
-	public <T extends ResponseBase> T fillFailResponseEthException(Class<T> response, Exception e) {
+	public <T extends ResponseBase> T fillResponseEthException(Class<T> response, Exception e) {
 		T res = getNewInstance(response);
 		res.success(false);
 //		res.resultCode(e.getInternalCode());
 		res.message(e.getMessage() != null ? e.getMessage() : "");
-//		res.errors(e.getErrors());
+		res.setTransactionId(MDC.get(LogConstants.UUID_KEY));
 
 		return res;
 	}
 
-	public <T extends ResponseBase> T fillFailResponseGeneric(Class<T> response1) {
+	public <T extends ResponseBase> T fillResponseGenericException(Class<T> response1) {
 		T response = getNewInstance(response1);
 		response.success(false);
 		// response.resultCode(EthExceptionEnums.UNHANDLED_EXCEPTION.get().getInternalCode());

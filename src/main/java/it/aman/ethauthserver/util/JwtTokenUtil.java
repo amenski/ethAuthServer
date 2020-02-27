@@ -3,7 +3,9 @@ package it.aman.ethauthserver.util;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import it.aman.ethauth.annotations.EthLoggable;
 
 /**
  * @author prg
@@ -24,11 +27,15 @@ public class JwtTokenUtil {
 	@Value("${app.jwt.key}")
 	private String appSecret;
 
+	@EthLoggable
 	public String generateToken(UserDetails userDetails) {
+		if(Objects.isNull(userDetails)) return StringUtils.EMPTY; //On validation empty string should fail
+		
 		Map<String, Object> claims = new HashMap<>();
 		return doGenerateToken(claims, userDetails.getUsername());
 	}
 
+	@EthLoggable
 	public boolean validateToken(String token, UserDetails userDetails) {
 		Claims claims = getAllClaims(token);
 		final String username = claims.getSubject();
