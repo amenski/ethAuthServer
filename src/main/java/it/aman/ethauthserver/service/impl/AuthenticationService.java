@@ -4,22 +4,23 @@ import javax.naming.AuthenticationException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import it.aman.ethauth.annotations.EthLoggable;
+import it.aman.ethauth.config.jwt.JwtTokenUtil;
 import it.aman.ethauth.model.EthUserPrincipal;
 import it.aman.ethauth.service.EthUserDetailServiceImpl;
 import it.aman.ethauthserver.service.IAuthenticationService;
-import it.aman.ethauthserver.util.JwtTokenUtil;
 
 @Service
 public class AuthenticationService implements IAuthenticationService {
 
-	@Autowired
-	private JwtTokenUtil jwtUtil;
+	@Value("${app.jwt.key:}")
+	private String secretKey;
 	
 	@Autowired
 	private EthUserDetailServiceImpl userDetailsService;
@@ -45,7 +46,7 @@ public class AuthenticationService implements IAuthenticationService {
 		} catch (Exception e) {
 			throw e;
 		}
-		return jwtUtil.generateToken(userDetails);
+		return JwtTokenUtil.generateToken(userDetails, secretKey);
 	}
 
 }
