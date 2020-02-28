@@ -7,10 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import it.aman.ethauth.annotations.EthLoggable;
+import it.aman.ethauth.model.EthUserPrincipal;
 import it.aman.ethauth.service.EthUserDetailServiceImpl;
 import it.aman.ethauthserver.service.IAuthenticationService;
 import it.aman.ethauthserver.util.JwtTokenUtil;
@@ -31,7 +31,7 @@ public class AuthenticationService implements IAuthenticationService {
 	@Override
 	@EthLoggable
 	public String authenticateAndGenerateToken(String userName, String password) throws Exception {
-		UserDetails userDetails = null;
+		EthUserPrincipal userDetails = null;
 
 		try {
 			if (StringUtils.isAnyEmpty(userName, password))
@@ -41,7 +41,7 @@ public class AuthenticationService implements IAuthenticationService {
 			if (auth == null)
 				throw new AuthenticationException("Insufficient permission.");
 
-			userDetails = userDetailsService.loadUserByUsername(userName);
+			userDetails = (EthUserPrincipal) userDetailsService.loadUserByUsername(userName);
 		} catch (Exception e) {
 			throw e;
 		}

@@ -14,6 +14,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import it.aman.ethauth.annotations.EthLoggable;
+import it.aman.ethauth.model.EthUserPrincipal;
 
 /**
  * @author prg
@@ -28,11 +29,14 @@ public class JwtTokenUtil {
 	private String appSecret;
 
 	@EthLoggable
-	public String generateToken(UserDetails userDetails) {
+	public String generateToken(EthUserPrincipal userDetails) {
 		if(Objects.isNull(userDetails)) return StringUtils.EMPTY; //On validation empty string should fail
 		
 		Map<String, Object> claims = new HashMap<>();
-		return doGenerateToken(claims, userDetails.getUsername());
+		//claims.put also suffices, computeIfAbset() is a must when there is a obj nesting or collection in the map for a key
+		claims.computeIfAbsent("sub", val -> userDetails.getUsername());
+		claims.computeIfAbsent("id", val -> userDetails.getAccountId());
+		return doGenerateToken(claims);
 	}
 
 	@EthLoggable
@@ -53,10 +57,9 @@ public class JwtTokenUtil {
 	// Serialization(https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-41#section-3.1)
 	
 	// compaction of the JWT to a URL-safe string
-	private String doGenerateToken(Map<String, Object> claims, String subject) {
+	private String doGenerateToken(Map<String, Object> claims) {
 		return Jwts.builder()
 				.setClaims(claims)
-				.setSubject(subject)
 				.setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + TOKEN_VALIDITY * 1000))
 				.signWith(SignatureAlgorithm.HS512, appSecret)
